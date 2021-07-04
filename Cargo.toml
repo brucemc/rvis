@@ -1,0 +1,19 @@
+[package]
+name = "rvis"
+version = "0.1.0"
+authors = ["Bruce McIntosh <bruce.e.mcintosh@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+glium = "0.29.1"
+
+clap = "2.33.3"
+byte-slice-cast = "1.0.0"
+derive_more = "0.99.13"
+anyhow = "1.0.40"
+gst = { package = "gstreamer", version = "0.16.7" }
+gst_audio = { package = "gstreamer-audio", version = "0.16.7" }
+gst_app = { package = "gstreamer-app", version = "0.16.5" }
+rustfft = "6.0.0"
