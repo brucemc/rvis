@@ -9,7 +9,7 @@ mod waterfall;
 mod kaleidoscope;
 mod texture_shader;
 use clap::{Arg, App};
-use glium::glutin::event::ModifiersState;
+// use glium::glutin::event::ModifiersState;
 
 #[derive(Clone)]
 enum Visualisation {
@@ -51,12 +51,12 @@ fn main() {
     state.file_name =  matches.value_of("file").map(|f | f.to_string());
 
     match state.file_name {
-        Some(_) => { run_visualisation(&state); },
+        Some(_) => { run_visualisation(state); },
         _ => { println!("No file"); }
     }
 }
 
-fn run_visualisation(state : &State) {
+fn run_visualisation(mut state : State) {
     gst::init().unwrap();
 
     use glium::{glutin, Surface};
@@ -104,7 +104,6 @@ fn run_visualisation(state : &State) {
 
     let wf_texture = glium::texture::Texture2d::empty(&display, 1240, 1024).unwrap();
 
-    let mut current_visualisation = state.visualisation.clone();
     let mut shift_state = false;
 
     event_loop.run(move |event, _, control_flow| {
@@ -142,7 +141,7 @@ fn run_visualisation(state : &State) {
                         Some(glutin::event::VirtualKeyCode::S) => {
                             match &pipeline {
                                 None => {
-                                    pipeline::Pipeline::new(&r"resources/youve_got_speed.mp3".to_string(), mpsc_sender.clone())
+                                    pipeline::Pipeline::new(&state.file_name.clone().unwrap(), mpsc_sender.clone())
                                         .map_err(|err| {
                                             println!("Error: could not create pipeline. {}", err);
                                             pipeline = Option::None;
@@ -184,10 +183,10 @@ fn run_visualisation(state : &State) {
                             }
                         },
                         Some(glutin::event::VirtualKeyCode::K) => {
-                            current_visualisation = Visualisation::KALEIDOSCOPE;
+                            state.visualisation = Visualisation::KALEIDOSCOPE;
                         },
                         Some(glutin::event::VirtualKeyCode::W) => {
-                            current_visualisation = Visualisation::WATERFALL;
+                            state.visualisation = Visualisation::WATERFALL;
                         },
                         Some(glutin::event::VirtualKeyCode::Key0) => {
                             if shift_state {
@@ -235,7 +234,7 @@ fn run_visualisation(state : &State) {
         target.clear_color(0.0, 0.0, 1.0, 1.0);
 
         wf.render(&mut framebuffer);
-        match current_visualisation {
+        match state.visualisation {
             Visualisation::WATERFALL => ts.render(&mut target, &wf_texture),
             Visualisation::KALEIDOSCOPE => ks.render(&mut target, &wf_texture),
         }
